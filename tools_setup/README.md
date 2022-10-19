@@ -2,7 +2,7 @@
 
 #### Step-1: First choose the Region where you would like to create a resources
 
-#### Step-2: Create keypair with name 'batch#'
+#### Step-2: Create keypair with ''
 
 #### Step-3: configure aws with ACCESS_KEY and SECRET_KEY.
     Install the aws cli and configure it

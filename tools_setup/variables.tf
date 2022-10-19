@@ -5,7 +5,7 @@ variable "region" {
 
 variable "cidr_block" {
   type    = list(string)
-  default = ["172.20.0.0/16", "172.20.10.0/24", "0.0.0.0/0"]
+  default = ["172.21.0.0/16", "172.21.10.0/24", "0.0.0.0/0"]
 }
 
 variable "availability_zone" {

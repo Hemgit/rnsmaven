@@ -15,7 +15,7 @@ resource "aws_vpc" "MyLab-VPC" {
   cidr_block = var.cidr_block[0]
 
   tags = {
-    Name = "MyLab-VPC"
+    Name = "MyApp-VPC"
   }
 }
 
@@ -24,7 +24,7 @@ resource "aws_subnet" "MyLab-Subnet1" {
   cidr_block        = var.cidr_block[1]
   availability_zone = var.availability_zone
   tags = {
-    Name = "MyLab-Subnet1"
+    Name = "MyApp-Subnet1"
   }
 }
 
@@ -32,7 +32,7 @@ resource "aws_internet_gateway" "MyLab-IntGW" {
   vpc_id = aws_vpc.MyLab-VPC.id
 
   tags = {
-    Name = "MyLab-InternetGW"
+    Name = "MyApp-InternetGW"
   }
 }
 
@@ -45,7 +45,7 @@ resource "aws_route_table" "MyLab-RouteTable" {
   }
 
   tags = {
-    Name = "MyLab-RouteTable"
+    Name = "MyApp-RouteTable"
   }
 }
 
