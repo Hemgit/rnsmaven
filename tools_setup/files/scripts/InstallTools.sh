@@ -53,6 +53,7 @@ echo "Web Server Setup"
 
 amazon-linux-extras install nginx1 -y &>>$LOG
 
+sudo sed -i -e '/location \/student/,+3 d' -e '/^        error_page 404/ i \\t location /student { \n\t\tproxy_pass http://localhost:8080/student;\n\t}\n' /etc/nginx/nginx.conf
 # rm -rf /usr/share/nginx/html/* &>>$LOG
 
 systemctl enable nginx &>>$LOG

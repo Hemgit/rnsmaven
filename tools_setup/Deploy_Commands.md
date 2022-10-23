@@ -45,5 +45,5 @@ sudo systemctl restart nginx &>>$LOG
 # Clone App and Deploy it to Tomcat SErver
 cd /opt/ && git clone https://gitlab.com/rns-app/student-app.git
 #source /home/ec2-user/.bashrc
-cd student-app && mvn clean package
+cd student-app && mvn clean package -DskipTests
 cp target/studentapp*.war /opt/tomcat/webapps/student.war

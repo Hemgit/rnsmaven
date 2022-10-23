@@ -119,11 +119,16 @@ resource "aws_instance" "Tomcat_Server" {
   vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
   subnet_id                   = aws_subnet.MyLab-Subnet1.id
   associate_public_ip_address = true
-  user_data                   = file("./files/scripts/InstallTomcat.sh")
+  user_data                   = file("./files/scripts/InstallTools.sh")
 
   tags = {
     Name = "Tomcat-Server"
   }
+
+  provisioner "local-exec" {
+    command = "echo ${self.private_ip} >> private_ips.txt"
+  }
+
 }
 
 resource "null_resource" "wait_for_instance" {
@@ -138,8 +143,8 @@ resource "null_resource" "wait_for_instance" {
     connection {
       type        = "ssh"
       host        = aws_instance.Tomcat_Server.public_ip
-      user        = "ec2-user"
-      private_key = file("./batch38.pem")
+      user        = "devops"
+      password    = "devops"
     }
   }
 
@@ -147,8 +152,8 @@ resource "null_resource" "wait_for_instance" {
     connection {
       type        = "ssh"
       host        = aws_instance.Tomcat_Server.public_ip
-      user        = "ec2-user"
-      private_key = file("./batch38.pem")
+      user        = "devops"
+      password    = "devops"
     }
 
     inline = [

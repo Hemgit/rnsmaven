@@ -1,3 +1,13 @@
+# These Terraform scripts will help to configure the Tools to deploy the student all in Jenkins CI process. The tools are as follows...
+
+###  - Launching EC2 Instance
+###  - Tools
+####    - Nginx
+####    - Tomcat server
+####    - MariaDB
+###  - Configuration:
+####    - Nginx -> Tomcat -> DB Server
+
 ## Pre-requisites:
 
 #### Step-1: First choose the Region where you would like to create a resources

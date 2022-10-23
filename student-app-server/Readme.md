@@ -1,3 +1,18 @@
+# These Terraform scripts will help to configure the student app application with the following Services...
+
+###  - Launching EC2 Instance
+###  - Tools
+####    - Maven
+####    - Nginx
+####    - Tomcat server
+####    - MariaDB
+###  - Configuration:
+####    - Nginx -> Tomcat -> DB Server
+###  - Application Deployment:
+####    - Static Application on Nginx Server
+####    - Dynamic Application On Tomcat
+####    - Schemas uploading to DB
+
 ## Pre-requisites:
 
 ### Step-1: First choose the Region where you would like to create a resources
