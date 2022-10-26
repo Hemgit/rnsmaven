@@ -16,9 +16,9 @@ provider "aws" {
 # Create Secutity Group
 
 resource "aws_security_group" "MyLab_Sec_Group" {
-  name        = "MyLab Security Group"
-  description = "To allow inbound and outbound traffic to mylab"
-  
+  name        = "MyApp Security Group"
+  description = "To allow inbound and outbound traffic to Application"
+
   dynamic "ingress" {
     iterator = port
     for_each = var.ports
