@@ -1,0 +1,79 @@
+#! /bin/bash
+
+# Global Variables
+LOG=/tmp/stack.log
+G="\e[32m"
+R="\e[31m"
+N="\e[0m"
+
+# Heading Function
+HEADING() {
+  echo -e "\n\t\t\e[1;4;33m$1\e[0m\n"
+}
+
+# Status check function
+STATUS_CHECK() {
+  if [ $1 -eq 0 ]; then
+    echo -e "$2 -- ${G}SUCCESS${N}"
+  else
+    echo -e "$2 -- ${R}FAILURE${N}"
+    exit 1
+  fi
+}
+
+
+# Set Hostname Jenkins
+hostnamectl set-hostname build-server
+
+## Web Server Installation
+HEADING "Creating DevOps User"
+
+# add the user devops
+useradd devops
+# set password : the below command will avoid re entering the password
+echo "devops" | passwd --stdin devops
+# modify the sudoers file at /etc/sudoers and add entry
+echo 'devops     ALL=(ALL)      NOPASSWD: ALL' | sudo tee -a /etc/sudoers
+echo 'ec2-user     ALL=(ALL)      NOPASSWD: ALL' | sudo tee -a /etc/sudoers
+# this command is to add an entry to file : echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
+# the below sed command will find and replace words with spaces "PasswordAuthentication no" to "PasswordAuthentication yes"
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+service sshd restart
+STATUS_CHECK $? "Successfully DevOps User Created\t"
+
+HEADING "Installing Required Softwares - Git"
+yum update -y
+# Install Git SCM
+yum install wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
+git --version &>>$LOG
+STATUS_CHECK $? "Successfully Installed Required Softwares\t"
+
+## Enable color prompt
+curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/ps1.sh -o /etc/profile.d/ps1.sh
+chmod +x /etc/profile.d/ps1.sh
+
+## Enable idle shutdown
+curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/idle.sh -o /boot/idle.sh
+chmod +x /boot/idle.sh
+{ crontab -l -u devops; echo '*/10 * * * * sh -x /boot/idle.sh &>/tmp/idle.out'; } | crontab -u devops -
+
+HEADING "Installing Java"
+# Install Java
+amazon-linux-extras install java-openjdk11 -y &>>$LOG
+STATUS_CHECK $? "Successfully Installed Java\t"
+
+HEADING "Installing Maven Tool"
+# script to install maven
+
+# todo: add method for checking if latest or automatically grabbing latest
+mvn_version=${mvn_version:-3.8.6}
+url="http://www.mirrorservice.org/sites/ftp.apache.org/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz"
+install_dir="/opt/maven"
+
+if [ -d ${install_dir} ]; then
+    mv ${install_dir} ${install_dir}.$(date +"%Y%m%d")
+fi
+
+mkdir ${install_dir}
+chown -R devops:devops ${install_dir}
+curl -fsSL ${url} | tar zx --strip-components=1 -C ${install_dir}
