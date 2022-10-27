@@ -23,7 +23,7 @@ service sshd restart
 amazon-linux-extras install java-openjdk11 -y &>>$LOG
 
 # Install Git SCM
-yum install wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
+yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
 git --version &>>$LOG
 
 ## Enable color prompt
