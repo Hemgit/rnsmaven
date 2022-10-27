@@ -44,7 +44,7 @@ STATUS_CHECK $? "Successfully DevOps User Created\t"
 HEADING "Installing Required Softwares - Git"
 yum update -y
 # Install Git SCM
-yum install wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
+yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
 git --version &>>$LOG
 STATUS_CHECK $? "Successfully Installed Required Softwares\t"
 
