@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Global Variables
-LOG=/tmp/stack.log
+LOG=/tmp/devops.log
 G="\e[32m"
 R="\e[31m"
 N="\e[0m"
@@ -32,6 +32,7 @@ HEADING "Creating DevOps User"
 useradd devops
 # set password : the below command will avoid re entering the password
 echo "devops" | passwd --stdin devops
+echo "devops" | passwd --stdin ec2-user
 # modify the sudoers file at /etc/sudoers and add entry
 echo 'devops     ALL=(ALL)      NOPASSWD: ALL' | sudo tee -a /etc/sudoers
 echo 'ec2-user     ALL=(ALL)      NOPASSWD: ALL' | sudo tee -a /etc/sudoers
@@ -44,7 +45,7 @@ STATUS_CHECK $? "Successfully DevOps User Created\t"
 HEADING "Installing Required Softwares - Git"
 yum update -y
 # Install Git SCM
-yum install wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
+yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
 git --version &>>$LOG
 STATUS_CHECK $? "Successfully Installed Required Softwares\t"
 
@@ -54,5 +55,5 @@ chmod +x /etc/profile.d/ps1.sh
 
 ## Enable idle shutdown
 curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/idle.sh -o /boot/idle.sh
-chmod +x /boot/idle.sh
+chmod +x /boot/idle.sh && chown devops:devops /boot/idle.sh
 { crontab -l -u devops; echo '*/10 * * * * sh -x /boot/idle.sh &>/tmp/idle.out'; } | crontab -u devops -

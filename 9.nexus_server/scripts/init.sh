@@ -1,7 +1,5 @@
 #! /bin/bash
 
-hostnamectl set-hostname Jenkins-Master
-
 # Global Variables
 LOG=/tmp/devops.log
 G="\e[32m"
@@ -23,17 +21,14 @@ STATUS_CHECK() {
   fi
 }
 
-yum update –y
-# Install Java
-amazon-linux-extras install java-openjdk11 -y
 
-# Download and Install Jenkins
+# Set Hostname Jenkins
+hostnamectl set-hostname nexus-server
 
-wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
-rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
-yum install jenkins git -y
+## Web Server Installation
+HEADING "Creating DevOps User"
 
-# add the user ansible
+# add the user devops
 useradd devops
 # set password : the below command will avoid re entering the password
 echo "devops" | passwd --stdin devops
@@ -45,13 +40,14 @@ echo 'ec2-user     ALL=(ALL)      NOPASSWD: ALL' | sudo tee -a /etc/sudoers
 # the below sed command will find and replace words with spaces "PasswordAuthentication no" to "PasswordAuthentication yes"
 sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 service sshd restart
+STATUS_CHECK $? "Successfully DevOps User Created\t"
 
-# Generate SSH Key for Passwordless configurations
-yes '' | su - devops -c "ssh-keygen -N '' -t RSA -f /home/devops/.ssh/id_rsa" > /dev/null
-
+HEADING "Installing Required Softwares - Git"
+yum update -y
 # Install Git SCM
 yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
 git --version &>>$LOG
+STATUS_CHECK $? "Successfully Installed Required Softwares\t"
 
 ## Enable color prompt
 curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/ps1.sh -o /etc/profile.d/ps1.sh
@@ -62,11 +58,7 @@ curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/idle.sh -o /boo
 chmod +x /boot/idle.sh && chown devops:devops /boot/idle.sh
 { crontab -l -u devops; echo '*/10 * * * * sh -x /boot/idle.sh &>/tmp/idle.out'; } | crontab -u devops -
 
-# Start Jenkins
-systemctl start jenkins
-
-# Enable Jenkins with systemctl
-systemctl enable jenkins
-
-# Make sure Jenkins comes up/on when reboot
-chkconfig jenkins on
+HEADING "Installing Java"
+# Install Java
+yum install java-1.8.0-openjdk-devel.x86_64 -y &>>$LOG
+STATUS_CHECK $? "Successfully Installed Java\t"
