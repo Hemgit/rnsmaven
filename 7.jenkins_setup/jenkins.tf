@@ -46,7 +46,7 @@ resource "aws_instance" "Jenkins_Master" {
   user_data                   = file("./scripts/JenkinsMaster.sh")
 
   tags = {
-    Name = "Jenkins-MasterNode"
+    Name = "Jenkins-Master"
   }
 }
 
