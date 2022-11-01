@@ -58,7 +58,7 @@ TimeoutSec=600
 
 [Install]
 WantedBy=multi-user.target' | sudo tee -a /etc/systemd/system/nexus.service
-
+sudo chown devops:devops /etc/systemd/system/nexus.service
 sudo chmod +x /etc/systemd/system/nexus.service
 # Start Nexus
 sudo systemctl daemon-reload
