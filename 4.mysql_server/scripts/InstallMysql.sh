@@ -44,6 +44,9 @@ sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_
 service sshd restart
 STATUS_CHECK $? "Successfully DevOps User Created\t"
 
+sudo su - devops -c "git config --global user.name 'devops'"
+sudo su - devops -c "git config --global user.email 'devops@gmail.com'"
+
 # Install Git SCM
 yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
 git --version &>>$LOG

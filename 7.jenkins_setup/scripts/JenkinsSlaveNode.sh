@@ -44,6 +44,9 @@ service sshd restart
 yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
 git --version &>>$LOG
 
+sudo su - devops -c "git config --global user.name 'devops'"
+sudo su - devops -c "git config --global user.email 'devops@gmail.com'"
+
 # Install Java 8
 yum install java-1.8.0-openjdk-devel.x86_64 -y &>>$LOG
 

@@ -53,6 +53,9 @@ yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq
 git --version &>>$LOG
 STATUS_CHECK $? "Successfully Installed Required Softwares\t"
 
+sudo su - devops -c "git config --global user.name 'devops'"
+sudo su - devops -c "git config --global user.email 'devops@gmail.com'"
+
 ## Enable color prompt
 curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/ps1.sh -o /etc/profile.d/ps1.sh
 chmod +x /etc/profile.d/ps1.sh
