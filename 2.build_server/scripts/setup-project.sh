@@ -1,6 +1,6 @@
 #! /bin/bash
 
-sleep 60
+sleep 90
 
 PROJECT_HOME="/opt/projects"
 MAVEN_INSTALL_DIR="/opt/maven"

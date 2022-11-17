@@ -16,7 +16,7 @@ provider "aws" {
 # Create Secutity Group
 
 resource "aws_security_group" "MyLab_Sec_Group" {
-  name        = "MyLab Security Group"
+  name        = "Tomcat Server Security Group"
   description = "To allow inbound and outbound traffic to mylab"
 
   dynamic "ingress" {
