@@ -15,8 +15,8 @@ provider "aws" {
 
 # Create Secutity Group
 
-resource "aws_security_group" "MyLab_Sec_Group" {
-  name        = "MyLab Security Group"
+resource "aws_security_group" "Build_Server_Sec_Group" {
+  name        = "Build Server Security Group"
   description = "To allow inbound and outbound traffic to mylab"
   #vpc_id      = aws_vpc.MyLab-VPC.id
 
@@ -59,7 +59,7 @@ data "aws_ami" "aws_linux_2_latest" {
 resource "aws_instance" "Build_Server" {
   ami                         = data.aws_ami.aws_linux_2_latest.id
   instance_type               = var.instance_type
-  vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
+  vpc_security_group_ids      = [aws_security_group.Build_Server_Sec_Group.id]
   associate_public_ip_address = true
   user_data                   = file("./scripts/install-maven.sh")
 

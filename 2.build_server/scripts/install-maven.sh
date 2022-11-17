@@ -70,14 +70,17 @@ HEADING "Installing Maven Tool"
 # script to install maven
 
 # todo: add method for checking if latest or automatically grabbing latest
-mvn_version=${mvn_version:-3.8.6}
-url="http://www.mirrorservice.org/sites/ftp.apache.org/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz"
+
 install_dir="/opt/maven"
 
 if [ -d ${install_dir} ]; then
     mv ${install_dir} ${install_dir}.$(date +"%Y%m%d")
 fi
 
-mkdir ${install_dir}
+VERSION=$(curl -s https://maven.apache.org/download.cgi  | grep Downloading |awk '{print $NF}' |awk -F '<' '{print $1}')
+cd /opt
+curl -s https://archive.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.zip -o /tmp/apache-maven-${VERSION}-bin.zip
+unzip /tmp/apache-maven-${VERSION}-bin.zip
+mv apache-maven-${VERSION} maven
 chown -R devops:devops ${install_dir}
-curl -fsSL ${url} | tar zx --strip-components=1 -C ${install_dir}
+ln -s /opt/maven/bin/mvn /bin/mvn
