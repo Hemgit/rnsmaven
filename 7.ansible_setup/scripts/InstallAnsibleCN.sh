@@ -38,7 +38,7 @@ sudo echo "devops" | passwd --stdin devops
 sudo echo "devops" | passwd --stdin ec2-user
 
 # Generate SSH Key for Passwordless configurations
-yes '' | ssh-keygen -N '' -f /home/devops/.ssh/id_rsa > /dev/null
+sudo su - devops -c "yes '' | ssh-keygen -N '' -f /home/devops/.ssh/id_rsa > /dev/null"
 
 # modify the sudoers file at /etc/sudoers and add entry
 echo 'devops     ALL=(ALL)      NOPASSWD: ALL' | sudo tee -a /etc/sudoers
