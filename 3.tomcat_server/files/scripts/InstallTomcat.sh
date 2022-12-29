@@ -46,10 +46,10 @@ chown -R devops:devops /opt
 # groupadd tomcat && useradd -M -s /bin/nologin -g tomcat -d /usr/local/tomcat tomcat
 
 cd /opt/
-wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.68/bin/apache-tomcat-9.0.68.tar.gz
-tar -xvf apache-tomcat-9.0.68.tar.gz &>>$LOG
-mv apache-tomcat-9.0.68 tomcat
-rm -f apache-tomcat-9.0.68.tar.gz
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.70/bin/apache-tomcat-9.0.70.tar.gz
+tar -xvf apache-tomcat-9.0.70.tar.gz &>>$LOG
+mv apache-tomcat-9.0.70 tomcat
+rm -f apache-tomcat-9.0.70.tar.gz
 
 chown -R devops:devops /opt/tomcat/
 
@@ -82,6 +82,7 @@ cp /tmp/tomcat/manager/context.xml /opt/tomcat/webapps/manager/META-INF/
 cp /tmp/tomcat/conf/tomcat-users.xml /opt/tomcat/conf/
 cp /tmp/tomcat/conf/context.xml /opt/tomcat/conf/
 cp /tmp/tomcat/lib/mysql-connector.jar /opt/tomcat/lib/
+cp /tmp/tomcat/conf/server.xml /opt/tomcat/conf/
 
 systemctl daemon-reload
 systemctl start tomcat
