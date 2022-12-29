@@ -24,7 +24,7 @@
       #  when: tomcat_dir_check.stat.exists|bool == false
   notify: Restart Tomcat
 
-- name: Check a tomcat directory exists or not
+- name: Set the devops user owner and group
   file:
     path: /opt/apache-tomcat-9.0.70/
     state: directory
