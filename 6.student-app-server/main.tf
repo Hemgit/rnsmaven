@@ -59,7 +59,6 @@ data "aws_ami" "aws_linux_2_latest" {
 resource "aws_instance" "Tomcat_Server" {
   ami                         = data.aws_ami.aws_linux_2_latest.id
   instance_type               = var.instance_type
-  key_name                    = var.keypair_name
   vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
   associate_public_ip_address = true
   user_data                   = file("./files/scripts/InstallTools.sh")
@@ -84,19 +83,19 @@ resource "null_resource" "wait_for_instance" {
     destination = "/tmp/"
 
     connection {
-      type        = "ssh"
-      host        = aws_instance.Tomcat_Server.public_ip
-      user        = "devops"
-      password    = "devops"
+      type     = "ssh"
+      host     = aws_instance.Tomcat_Server.public_ip
+      user     = "devops"
+      password = "devops"
     }
   }
 
   provisioner "remote-exec" {
     connection {
-      type        = "ssh"
-      host        = aws_instance.Tomcat_Server.public_ip
-      user        = "devops"
-      password    = "devops"
+      type     = "ssh"
+      host     = aws_instance.Tomcat_Server.public_ip
+      user     = "devops"
+      password = "devops"
     }
 
     inline = [

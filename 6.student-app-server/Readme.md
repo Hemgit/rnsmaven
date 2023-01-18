@@ -17,15 +17,11 @@
 
 ### Step-1: First choose the Region where you would like to create a resources
 
-### Step-2: Create keypair with name 'batch#'
-
-### Step-3: configure aws with ACCESS_KEY and SECRET_KEY.
+### Step-2: configure aws with ACCESS_KEY and SECRET_KEY.
 #### Install the aws cli and configure it
 #### $ aws configure
 
-### Step-4: Set the following Variable Values in variables.tf file
+### Step-3: Set the following Variable Values in variables.tf file
 ####  - region
-####  - keypair_name
-####  - availability_zone
 
-#### Step-5:  Error: Incase while starting the tomcat server using 'systemctl start tomcat', then set the JAVA_HOME variable value located in the 'InstallTomcat.sh'
+#### Step-4:  Error: Incase while starting the tomcat server using 'systemctl start tomcat', then set the JAVA_HOME variable value located in the 'InstallTomcat.sh'
