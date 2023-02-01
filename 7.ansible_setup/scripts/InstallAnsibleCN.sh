@@ -28,7 +28,7 @@ yum-config-manager --enable epel
 yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install epel-release-latest-7.noarch.rpm
 yum update -y
-yum install python python-devel python-pip openssl ansible git -y
+yum install python python-devel python-pip openssl ansible -y
 
 sudo su -
 # add the user ansible
@@ -64,3 +64,5 @@ chmod +x /etc/profile.d/ps1.sh
 curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/idle.sh -o /boot/idle.sh
 chmod +x /boot/idle.sh && chown devops:devops /boot/idle.sh
 { crontab -l -u devops; echo '*/10 * * * * sh -x /boot/idle.sh &>/tmp/idle.out'; } | crontab -u devops -
+
+sshpass -p "devops" ssh-copy-id -i ~/.ssh/id_rsa.pub devops@$server

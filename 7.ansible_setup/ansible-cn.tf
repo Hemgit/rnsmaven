@@ -3,7 +3,6 @@
 resource "aws_security_group" "MyLab_Sec_Group" {
   name        = "Ansible Security Group"
   description = "Allow inbound and outbound traffic"
-  vpc_id      = aws_vpc.MyLab-VPC.id
 
   dynamic "ingress" {
     iterator = port
@@ -12,7 +11,7 @@ resource "aws_security_group" "MyLab_Sec_Group" {
       from_port   = port.value
       to_port     = port.value
       protocol    = "tcp"
-      cidr_blocks = [var.cidr_block[2]]
+      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 
@@ -40,27 +39,41 @@ data "aws_ami" "aws-linux-2-latest" {
 }
 
 resource "aws_instance" "AnsibleController" {
-  ami           = data.aws_ami.aws-linux-2-latest.id
-  instance_type = var.instance_type
-  key_name = var.keypair_name
-  vpc_security_group_ids = [aws_security_group.MyLab_Sec_Group.id]
-  subnet_id = aws_subnet.MyLab-Subnet1.id
+  ami                         = data.aws_ami.aws-linux-2-latest.id
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
   associate_public_ip_address = true
-  user_data = file("./scripts/InstallAnsibleCN.sh")
+  user_data                   = file("./scripts/InstallAnsibleCN.sh")
 
   tags = {
     Name = "Ansible-ControlNode"
   }
 }
 
+resource "null_resource" "wait_for_instance" {
+  depends_on = [
+    aws_instance.AnsibleController
+  ]
+
+  provisioner "file" {
+    source      = "files/"
+    destination = "/home/devops/"
+
+    connection {
+      type        = "ssh"
+      host        = aws_instance.AnsibleController.public_ip
+      user        = "devops"
+      password    = "devops"
+    }
+  }
+}
+
 resource "aws_instance" "Ansible_Web_Server" {
-  ami           = data.aws_ami.aws-linux-2-latest.id
-  instance_type = var.instance_type
-  key_name = var.keypair_name
-  vpc_security_group_ids = [aws_security_group.MyLab_Sec_Group.id]
-  subnet_id = aws_subnet.MyLab-Subnet1.id
+  ami                         = data.aws_ami.aws-linux-2-latest.id
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
   associate_public_ip_address = true
-  user_data = file("./scripts/AnsibleManagedNode.sh")
+  user_data                   = file("./scripts/AnsibleManagedNode.sh")
 
   tags = {
     Name = "Ansible-WebServer"
@@ -68,13 +81,11 @@ resource "aws_instance" "Ansible_Web_Server" {
 }
 
 resource "aws_instance" "Ansible_App_Server" {
-  ami           = data.aws_ami.aws-linux-2-latest.id
-  instance_type = var.instance_type
-  key_name = var.keypair_name
-  vpc_security_group_ids = [aws_security_group.MyLab_Sec_Group.id]
-  subnet_id = aws_subnet.MyLab-Subnet1.id
+  ami                         = data.aws_ami.aws-linux-2-latest.id
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
   associate_public_ip_address = true
-  user_data = file("./scripts/AnsibleManagedNode.sh")
+  user_data                   = file("./scripts/AnsibleManagedNode.sh")
 
   tags = {
     Name = "Ansible-AppServer"
