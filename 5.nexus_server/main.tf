@@ -82,19 +82,19 @@ resource "null_resource" "wait_for_instance" {
     destination = "/tmp/"
 
     connection {
-      type        = "ssh"
-      host        = aws_instance.Nexus_Server.public_ip
-      user        = "devops"
-      password    = "devops"
+      type     = "ssh"
+      host     = aws_instance.Nexus_Server.public_ip
+      user     = "devops"
+      password = "devops"
     }
   }
 
   provisioner "remote-exec" {
     connection {
-      type        = "ssh"
-      host        = aws_instance.Nexus_Server.public_ip
-      user        = "devops"
-      password    = "devops"
+      type     = "ssh"
+      host     = aws_instance.Nexus_Server.public_ip
+      user     = "devops"
+      password = "devops"
     }
 
     inline = [
