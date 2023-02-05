@@ -49,7 +49,7 @@ sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_
 sudo service sshd restart
 
 # Install Required Softwares
-yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
+yum install tree wget zip unzip gzip openssh-clients vim net-tools git bind-utils python2-pip jq -y &>>$LOG
 git --version &>>$LOG
 STATUS_CHECK $? "Successfully Installed Required Softwares\t"
 

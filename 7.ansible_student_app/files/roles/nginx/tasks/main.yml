@@ -31,9 +31,14 @@
   shell: "cp -R /tmp/project/iPortfolio/* /usr/share/nginx/html/"
   become: yes
 
+# - name: Copy configuration file
+#  copy:
+#  src: nginx.conf
+#    dest: /etc/nginx/nginx.conf
+
 - name: Copy configuration file
-  copy:
-    src: nginx.conf
+  template:
+    src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
 
 - name: Start the Nginx Service

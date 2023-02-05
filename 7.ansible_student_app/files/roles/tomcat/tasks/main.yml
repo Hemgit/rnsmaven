@@ -10,7 +10,7 @@
 
 - name: Check a tomcat directory exists or not
   stat:
-    path: /opt/apache-tomcat-9.0.70/
+    path: "{{TOMCAT_HOME}}"
   register: tomcat_dir_check
 
 - name: Check the Tomact Home directory
@@ -26,7 +26,7 @@
 
 - name: Set the devops user owner and group
   file:
-    path: /opt/apache-tomcat-9.0.70/
+    path: "{{TOMCAT_HOME}}"
     state: directory
     owner: devops
     group: devops
@@ -43,25 +43,25 @@
 - name: Download JDBC Jar file
   copy:
     src: "files/tomcat/lib/mysql-connector.jar"
-    dest: "/opt/apache-tomcat-9.0.70/lib/"
+    dest: "{{TOMCAT_HOME}}/lib/"
   notify: Restart Tomcat
 
 - name: Update Tomcat Context Configuration with Database Details
   template:
     src: context.xml.j2
-    dest: "/opt/apache-tomcat-9.0.70/conf/context.xml"
+    dest: "{{TOMCAT_HOME}}/conf/context.xml"
   notify: Restart Tomcat
 
 - name: Update Tomcat Users file
   copy:
     src: "files/tomcat/conf/tomcat-users.xml"
-    dest: "/opt/apache-tomcat-9.0.70/conf/"
+    dest: "{{TOMCAT_HOME}}/conf/"
   notify: Restart Tomcat
 
 - name: Update manager context file
   copy:
     src: "files/tomcat/manager/context.xml"
-    dest: "/opt/apache-tomcat-9.0.70/webapps/manager/META-INF/"
+    dest: "{{TOMCAT_HOME}}/webapps/manager/META-INF/"
   notify: Restart Tomcat
 
 - name: Download Tomcat Init script

@@ -38,9 +38,12 @@ http {
         location / {
         }
 
-        location /student {
-          proxy_pass http://localhost:8080/student;
+        {% for location in locations %}
+location /{{ location }} {
+          proxy_pass http://{{TOMCAT_HOST}}:8080/{{ location }};
         }
+        {% endfor %}
+
 
         error_page 404 /404.html;
             location = /40x.html {
