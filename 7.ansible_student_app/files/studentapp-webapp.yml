@@ -11,8 +11,8 @@
   hosts: appserver
   become: yes
   roles:
-    - tomcat
     - mariadb
+    - tomcat
   vars:
     - DBUSER: student
     - DBPASS: student1

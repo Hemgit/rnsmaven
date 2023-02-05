@@ -51,56 +51,6 @@ resource "aws_instance" "AnsibleController" {
   }
 }
 
-resource "null_resource" "wait_for_instance" {
-  depends_on = [
-    aws_instance.AnsibleController,
-    aws_instance.Ansible_Web_Server,
-    aws_instance.Ansible_App_Server
-  ]
-
-  connection {
-    type        = "ssh"
-    host        = aws_instance.AnsibleController.public_ip
-    user        = "devops"
-    password    = "devops"
-  }
-
-  provisioner "file" {
-    source      = "files/"
-    destination = "/home/devops/"
-  }
-}
-
-resource "null_resource" "wait_for_ips" {
-  depends_on = [
-    local_file.private_ips
-  ]
-
-  connection {
-    type        = "ssh"
-    host        = aws_instance.AnsibleController.public_ip
-    user        = "devops"
-    password    = "devops"
-  }
-
-  provisioner "file" {
-    source      = "scripts/"
-    destination = "/home/devops/"
-  }
-
-  provisioner "remote-exec" {
-
-    inline = [
-      "cd /home/devops/",
-      "chmod +x ssh_config.sh",
-      "sed -i -e 's/\r$//' ssh_config.sh",
-      "~/ssh_config.sh",
-      "ansible all -m ping",
-      "ansible-playbook studentapp-webapp.yml"
-    ]
-  }
-}
-
 resource "aws_instance" "Ansible_Web_Server" {
   ami                         = data.aws_ami.aws-linux-2-latest.id
   instance_type               = var.instance_type
@@ -124,5 +74,4 @@ resource "aws_instance" "Ansible_App_Server" {
   tags = {
     Name = "Ansible-AppServer"
   }
-
 }
