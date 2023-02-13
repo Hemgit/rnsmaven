@@ -21,11 +21,12 @@ STATUS_CHECK() {
   fi
 }
 
-
-# Set Hostname Jenkins
+# Set Hostname
 hostnamectl set-hostname server
 
-## Web Server Installation
+# Update the system with latest packages
+yum update -y
+
 HEADING "Creating DevOps User"
 
 # add the user devops
@@ -42,8 +43,8 @@ sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_
 service sshd restart
 STATUS_CHECK $? "Successfully DevOps User Created\t"
 
-HEADING "Installing Required Softwares - Git"
-yum update -y
+HEADING "Installing Required Softwares"
+
 # Install Git SCM
 yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
 git --version &>>$LOG
@@ -55,8 +56,3 @@ sudo su - devops -c "git config --global user.email 'devops@gmail.com'"
 ## Enable color prompt
 curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/ps1.sh -o /etc/profile.d/ps1.sh
 chmod +x /etc/profile.d/ps1.sh
-
-## Enable idle shutdown
-curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/idle.sh -o /boot/idle.sh
-chmod +x /boot/idle.sh && chown devops:devops /boot/idle.sh
-{ crontab -l -u devops; echo '*/10 * * * * sh -x /boot/idle.sh &>/tmp/idle.out'; } | crontab -u devops -
