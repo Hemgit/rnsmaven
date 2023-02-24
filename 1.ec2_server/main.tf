@@ -68,6 +68,6 @@ resource "aws_instance" "VM_Server" {
   }
 
   provisioner "local-exec" {
-    command = "echo ${self.private_ip} >> private_ip.txt"
+    command = "echo ${self.private_ip} > private_ip.txt"
   }
 }
