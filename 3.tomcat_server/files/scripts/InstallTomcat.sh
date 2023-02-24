@@ -63,7 +63,7 @@ Description=Apache Tomcat Web Application Container
 After=syslog.target network.target
 [Service]
 Type=forking
-Environment=JAVA_HOME=/usr/lib/jvm/jre-11-openjdk-11.0.16.0.8-1.amzn2.0.1.x86_64/
+Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.18.0.10-1.amzn2.0.1.x86_64
 Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
 Environment=CATALINA_HOME=/opt/tomcat/
 Environment=CATALINA_BASE=/opt/tomcat/
