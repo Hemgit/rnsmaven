@@ -46,10 +46,10 @@ chown -R devops:devops /opt
 # groupadd tomcat && useradd -M -s /bin/nologin -g tomcat -d /usr/local/tomcat tomcat
 
 cd /opt/
-wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.71/bin/apache-tomcat-9.0.71.tar.gz
-tar -xvf apache-tomcat-9.0.71.tar.gz &>>$LOG
-mv apache-tomcat-9.0.71 tomcat
-rm -f apache-tomcat-9.0.71.tar.gz
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.72/bin/apache-tomcat-9.0.72.tar.gz
+tar -xvf apache-tomcat-9.0.72.tar.gz &>>$LOG
+mv apache-tomcat-9.0.72 tomcat
+rm -f apache-tomcat-9.0.72.tar.gz
 
 chown -R devops:devops /opt/tomcat/
 
