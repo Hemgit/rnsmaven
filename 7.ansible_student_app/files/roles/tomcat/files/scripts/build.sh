@@ -15,4 +15,4 @@ cp -R /tmp/student-app /opt/
 #cd /opt/ && git clone https://gitlab.com/rns-app/student-app.git
 #source /home/ec2-user/.bashrc
 cd /opt/student-app && mvn clean package -DskipTests
-cp /opt/student-app/target/studentapp*.war /opt/apache-tomcat-9.0.71/webapps/student.war
+cp /opt/student-app/target/studentapp*.war /opt/apache-tomcat-9.0.73/webapps/student.war
