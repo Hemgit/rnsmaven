@@ -1,4 +1,5 @@
 #!/bin/bash
+sleep 60
 filename='private_ips.txt'
 for server in `cat $filename`;
 do

@@ -25,6 +25,7 @@ amazon-linux-extras install java-openjdk11 -y &>>$LOG
 
 # Install Git SCM
 yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
+git --version &>>$LOG
 
 sudo su - devops -c "git config --global user.name 'devops'"
 sudo su - devops -c "git config --global user.email 'devops@gmail.com'"
@@ -45,10 +46,10 @@ chown -R devops:devops /opt
 # groupadd tomcat && useradd -M -s /bin/nologin -g tomcat -d /usr/local/tomcat tomcat
 
 cd /opt/
-wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.68/bin/apache-tomcat-9.0.68.tar.gz
-tar -xvf apache-tomcat-9.0.68.tar.gz &>>$LOG
-mv apache-tomcat-9.0.68 tomcat
-rm -f apache-tomcat-9.0.68.tar.gz
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.75.tar.gz
+tar -xvf apache-tomcat-9.0.75.tar.gz &>>$LOG
+mv apache-tomcat-9.0.75 tomcat
+rm -f apache-tomcat-9.0.75.tar.gz
 
 chown -R devops:devops /opt/tomcat/
 
@@ -58,7 +59,7 @@ Description=Apache Tomcat Web Application Container
 After=syslog.target network.target
 [Service]
 Type=forking
-Environment=JAVA_HOME=/usr/lib/jvm/jre-11-openjdk-11.0.16.0.8-1.amzn2.0.1.x86_64/
+Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.18.0.10-1.amzn2.0.1.x86_64
 Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
 Environment=CATALINA_HOME=/opt/tomcat/
 Environment=CATALINA_BASE=/opt/tomcat/

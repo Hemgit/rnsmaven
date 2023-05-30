@@ -2,7 +2,7 @@
 
 #### In the windows Open the Git Bash and switch to the directory where scripts can be executed
 
-      Ex: D:\workspace\
+      Ex: \d\workspace\
 
 ## Step-2: Clone the Repo
 
@@ -10,7 +10,7 @@
 
 ## Step-3: Open the project in atom
 
-      $ cd terraform && atom .
+      $ cd terraform/7.ansible_student_app && atom .
 
 ## Step-4: in GitBash run the terraform commands
 
@@ -63,8 +63,39 @@
           $ ssh devops@172.20.10.132
 
 
-## Step-7: Finally work is done, destroy the resources
+### Student Application Deployment:
 
-      $ terraform destroy --auto-approve
-      
-----------------------------Ansible Setup is done------------------------------
+#### MariaDB:
+    - Install DB
+    - Start/Stop
+    - Load App DB Schema (DB Create and Table Create)
+      - mysql -uroot < dbscript/student.sql
+
+#### Tomcat:
+    - Install
+      - install java
+      - Download tar file
+      - extract it
+    - Register as a service
+    - Start/Stop as service
+    - Configuration of Tomcat:
+        - Tomcat Users
+        - to allow remote access of manager app (context.xml)
+        - Load Driver mariadb (.jar)
+        - Connection: URL: localhost:3306/studentapp
+            - DB Host: localhost:3306/studentapp
+            - DB Port: 3306
+            - DB Name: studentapp
+            - DB UN: student
+            - DB PWD: student1
+      - Maven Build
+        - Build student app (.war)
+      - Deploy the Application
+
+#### Nginx Web Server:
+      - Install Nginx
+      - Start/Stop server
+      - Configure Nginx Server as Proxy
+      - Delete default Application
+      - Deployment of static App
+          - /usr/share/nginx/html/*
