@@ -74,7 +74,7 @@ HEADING "Installing Maven Tool"
 install_dir="/opt/maven"
 
 if [ -d ${install_dir} ]; then
-    mv ${install_dir} ${install_dir}.$(date +"%Y%m%d")
+  mv ${install_dir} ${install_dir}.$(date +"%Y%m%d")
 fi
 
 VERSION=$(curl -s https://maven.apache.org/download.cgi  | grep Downloading |awk '{print $NF}' |awk -F '<' '{print $1}')
@@ -83,4 +83,8 @@ curl -s https://archive.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache
 unzip /tmp/apache-maven-${VERSION}-bin.zip
 mv apache-maven-${VERSION} maven
 chown -R devops:devops ${install_dir}
-ln -s /opt/maven/bin/mvn /bin/mvn
+ln -sf /opt/maven/bin/mvn /usr/local/bin/mvn
+
+# Add Maven to PATH for all users
+echo 'export PATH=/opt/maven/bin:$PATH' > /etc/profile.d/maven.sh
+chmod +x /etc/profile.d/maven.sh
