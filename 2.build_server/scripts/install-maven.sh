@@ -78,9 +78,16 @@ if [ -d ${install_dir} ]; then
 fi
 
 VERSION=$(curl -s https://maven.apache.org/download.cgi  | grep Downloading |awk '{print $NF}' |awk -F '<' '{print $1}')
+echo $VERSION
 cd /opt
+
 curl -s https://archive.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.zip -o /tmp/apache-maven-${VERSION}-bin.zip
+echo $?
+echo $PWD
+echo "Unzipping in opt directory"
 unzip /tmp/apache-maven-${VERSION}-bin.zip
 mv apache-maven-${VERSION} maven
 chown -R devops:devops ${install_dir}
 ln -s /opt/maven/bin/mvn /bin/mvn
+echo $?
+echo "check status of linking"
