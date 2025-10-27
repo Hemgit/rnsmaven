@@ -80,8 +80,17 @@ fi
 VERSION=$(curl -s https://maven.apache.org/download.cgi  | grep Downloading |awk '{print $NF}' |awk -F '<' '{print $1}')
 cd /opt
 curl -s https://archive.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.zip -o /tmp/apache-maven-${VERSION}-bin.zip
+
 unzip /tmp/apache-maven-${VERSION}-bin.zip
+echo "After unzip, contents of /opt:"
+ls -l /opt
+echo "Contents of /opt/apache-maven-${VERSION}/bin:"
+ls -l /opt/apache-maven-${VERSION}/bin || echo "/opt/apache-maven-${VERSION}/bin not found"
 mv apache-maven-${VERSION} maven
+echo "After mv, contents of /opt:"
+ls -l /opt
+echo "Contents of /opt/maven/bin:"
+ls -l /opt/maven/bin || echo "/opt/maven/bin not found"
 chown -R devops:devops ${install_dir}
 ln -sf /opt/maven/bin/mvn /usr/local/bin/mvn
 
