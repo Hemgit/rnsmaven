@@ -1,6 +1,9 @@
 
 #! /bin/bash
 export PATH=/opt/maven/bin:$PATH
+echo "PATH is: $PATH"
+ls -l /opt/maven/bin/mvn || echo "/opt/maven/bin/mvn not found"
+which mvn || echo "mvn not found in PATH"
 
 sleep 90
 
