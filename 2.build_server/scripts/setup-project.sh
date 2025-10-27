@@ -1,4 +1,6 @@
+
 #! /bin/bash
+export PATH=/opt/maven/bin:$PATH
 
 sleep 90
 
