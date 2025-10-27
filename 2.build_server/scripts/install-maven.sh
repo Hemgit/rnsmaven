@@ -28,8 +28,8 @@ hostnamectl set-hostname build-server
 ## Web Server Installation
 HEADING "Creating DevOps User"
 
-# add the user devops if not exists
-id devops &>/dev/null || useradd devops
+# add the user devops
+useradd devops
 # set password : the below command will avoid re entering the password
 echo "devops" | passwd --stdin devops
 echo "devops" | passwd --stdin ec2-user
@@ -74,30 +74,13 @@ HEADING "Installing Maven Tool"
 install_dir="/opt/maven"
 
 if [ -d ${install_dir} ]; then
-  mv ${install_dir} ${install_dir}.$(date +"%Y%m%d")
+    mv ${install_dir} ${install_dir}.$(date +"%Y%m%d")
 fi
 
 VERSION=$(curl -s https://maven.apache.org/download.cgi  | grep Downloading |awk '{print $NF}' |awk -F '<' '{print $1}')
 cd /opt
 curl -s https://archive.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.zip -o /tmp/apache-maven-${VERSION}-bin.zip
-
 unzip /tmp/apache-maven-${VERSION}-bin.zip
-echo "After unzip, contents of /opt:"
-ls -l /opt
-echo "Contents of /opt/apache-maven-${VERSION}/bin:"
-ls -l /opt/apache-maven-${VERSION}/bin || echo "/opt/apache-maven-${VERSION}/bin not found"
 mv apache-maven-${VERSION} maven
-echo "After mv, contents of /opt:"
-ls -l /opt
-echo "Contents of /opt/maven/bin:"
-ls -l /opt/maven/bin || echo "/opt/maven/bin not found"
 chown -R devops:devops ${install_dir}
-ln -sf /opt/maven/bin/mvn /usr/local/bin/mvn
-
-# Add Maven to PATH for all users
-echo 'export PATH=/opt/maven/bin:$PATH' > /etc/profile.d/maven.sh
-chmod +x /etc/profile.d/maven.sh
-
-# Add Maven to PATH for all users
-echo 'export PATH=/opt/maven/bin:$PATH' > /etc/profile.d/maven.sh
-chmod +x /etc/profile.d/maven.sh
+ln -s /opt/maven/bin/mvn /bin/mvn
