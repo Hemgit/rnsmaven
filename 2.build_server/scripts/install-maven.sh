@@ -77,7 +77,7 @@ if [ -d ${install_dir} ]; then
     mv ${install_dir} ${install_dir}.$(date +"%Y%m%d")
 fi
 
-VERSION=$(curl -s https://maven.apache.org/download.cgi  | grep Downloading |awk '{print $NF}' |awk -F '<' '{print $1}')
+VERSION=$(curl -s https://maven.apache.org/download.cgi | grep -oP 'apache-maven-\K[0-9.]+(?=-bin.zip)' | head -1)
 echo $VERSION
 cd /opt
 
