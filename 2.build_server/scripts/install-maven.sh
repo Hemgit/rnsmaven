@@ -28,8 +28,8 @@ hostnamectl set-hostname build-server
 ## Web Server Installation
 HEADING "Creating DevOps User"
 
-# add the user devops
-useradd devops
+# add the user devops if not exists
+id devops &>/dev/null || useradd devops
 # set password : the below command will avoid re entering the password
 echo "devops" | passwd --stdin devops
 echo "devops" | passwd --stdin ec2-user
@@ -84,6 +84,10 @@ unzip /tmp/apache-maven-${VERSION}-bin.zip
 mv apache-maven-${VERSION} maven
 chown -R devops:devops ${install_dir}
 ln -sf /opt/maven/bin/mvn /usr/local/bin/mvn
+
+# Add Maven to PATH for all users
+echo 'export PATH=/opt/maven/bin:$PATH' > /etc/profile.d/maven.sh
+chmod +x /etc/profile.d/maven.sh
 
 # Add Maven to PATH for all users
 echo 'export PATH=/opt/maven/bin:$PATH' > /etc/profile.d/maven.sh
