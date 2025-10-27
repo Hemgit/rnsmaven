@@ -62,6 +62,7 @@ resource "aws_instance" "VM_Server" {
   vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
   associate_public_ip_address = true
   user_data                   = file("./scripts/init.sh")
+  key_name                    = "test1" # Reference to test1.pem
 
   tags = {
     Name = "Server"

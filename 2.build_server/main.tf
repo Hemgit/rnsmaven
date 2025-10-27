@@ -15,7 +15,7 @@ provider "aws" {
 
 # Create Secutity Group
 
-resource "aws_security_group" "Build_Server_Sec_Group" {
+resource "aws_security_group" "Build_Server_Sec_Group1" {
   name        = "Build Server Security Group"
   description = "To allow inbound and outbound traffic to mylab"
   #vpc_id      = aws_vpc.MyLab-VPC.id
