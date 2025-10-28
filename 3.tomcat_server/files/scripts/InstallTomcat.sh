@@ -95,6 +95,10 @@ cp /tmp/tomcat/conf/context.xml /opt/tomcat/conf/
 cp /tmp/tomcat/lib/mysql-connector.jar /opt/tomcat/lib/
 cp /tmp/tomcat/conf/server.xml /opt/tomcat/conf/
 
-systemctl daemon-reload
-systemctl start tomcat
-systemctl enable tomcat
+if [ -f /etc/systemd/system/tomcat.service ]; then
+	systemctl daemon-reload
+	systemctl start tomcat
+	systemctl enable tomcat
+else
+	echo "/etc/systemd/system/tomcat.service not found. Skipping systemctl commands."
+fi
