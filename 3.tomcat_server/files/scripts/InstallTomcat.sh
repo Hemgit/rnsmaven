@@ -45,11 +45,15 @@ git --version &>>$LOG
 chown -R devops:devops /opt
 # groupadd tomcat && useradd -M -s /bin/nologin -g tomcat -d /usr/local/tomcat tomcat
 
+
+# Download and install the latest Tomcat 10.x
 cd /opt/
-wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.75.tar.gz
-tar -xvf apache-tomcat-9.0.75.tar.gz &>>$LOG
-mv apache-tomcat-9.0.75 tomcat
-rm -f apache-tomcat-9.0.75.tar.gz
+TOMCAT_VERSION=$(curl -s https://tomcat.apache.org/download-10.cgi | grep -oP 'apache-tomcat-\K[0-9.]+(?=\.zip)' | head -1)
+echo "Latest Tomcat version: $TOMCAT_VERSION"
+wget https://dlcdn.apache.org/tomcat/tomcat-10/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+tar -xvf apache-tomcat-${TOMCAT_VERSION}.tar.gz &>>$LOG
+mv apache-tomcat-${TOMCAT_VERSION} tomcat
+rm -f apache-tomcat-${TOMCAT_VERSION}.tar.gz
 
 chown -R devops:devops /opt/tomcat/
 
