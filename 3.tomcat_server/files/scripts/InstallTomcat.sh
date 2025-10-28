@@ -61,25 +61,28 @@ chown -R devops:devops /opt/tomcat/
 java -version
 sudo bash /opt/tomcat/bin/version.sh
 
-echo '# Systemd unit file for tomcat
+cat <<EOF > /etc/systemd/system/tomcat.service
 [Unit]
 Description=Apache Tomcat Web Application Container
-After=syslog.target network.target
+After=network.target
+
 [Service]
 Type=forking
-Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.18.0.10-1.amzn2.0.1.x86_64
-Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
-Environment=CATALINA_HOME=/opt/tomcat/
-Environment=CATALINA_BASE=/opt/tomcat/
-Environment="CATALINA_OPTS=-Xms512M -Xmx512M -server -XX:+UseParallelGC"
-Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom"
-ExecStart=/opt/tomcat/bin/startup.sh
-ExecStop=/opt/tomcat/bin/shutdown.sh
-# ExecStop=/bin/kill -15 $MAINPID
 User=devops
 Group=devops
+Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
+Environment=CATALINA_HOME=/opt/tomcat
+Environment=CATALINA_BASE=/opt/tomcat
+Environment='CATALINA_OPTS=-Xms512M -Xmx512M -server -XX:+UseParallelGC'
+Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+Restart=on-failure
+
 [Install]
-WantedBy=multi-user.target' > /etc/systemd/system/tomcat.service
+WantedBy=multi-user.target
+EOF
 
 # Tomcat Configuration
 cp /tmp/tomcat/manager/context.xml /opt/tomcat/webapps/manager/META-INF/
