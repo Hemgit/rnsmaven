@@ -61,6 +61,10 @@ chown -R devops:devops /opt/tomcat/
 java -version
 sudo bash /opt/tomcat/bin/version.sh
 
+
+# Dynamically detect JAVA_HOME
+JAVA_PATH=$(readlink -f /usr/bin/java)
+JAVA_HOME_DIR=$(dirname $(dirname $JAVA_PATH))
 cat <<EOF > /etc/systemd/system/tomcat.service
 [Unit]
 Description=Apache Tomcat Web Application Container
@@ -70,7 +74,7 @@ After=network.target
 Type=forking
 User=devops
 Group=devops
-Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+Environment=JAVA_HOME=$JAVA_HOME_DIR
 Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
 Environment=CATALINA_HOME=/opt/tomcat
 Environment=CATALINA_BASE=/opt/tomcat
