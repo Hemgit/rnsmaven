@@ -102,3 +102,20 @@ if [ -f /etc/systemd/system/tomcat.service ]; then
 else
 	echo "/etc/systemd/system/tomcat.service not found. Skipping systemctl commands."
 fi
+
+# Update system packages
+sudo yum update -y
+
+# Enable Nginx from Amazon Linux Extras
+sudo amazon-linux-extras enable nginx1
+
+# Install Nginx
+sudo yum install nginx -y
+
+# Start and enable Nginx service
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+
+# Confirm Nginx status
+sudo systemctl status nginx
