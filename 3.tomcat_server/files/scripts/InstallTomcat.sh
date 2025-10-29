@@ -1,4 +1,13 @@
+
+
 #! /bin/bash
+
+# Install Nginx
+echo "Installing Nginx..."
+yum install -y nginx &>>$LOG
+systemctl enable nginx
+systemctl start nginx
+echo "Nginx installed and started."
 
 # Global Variables
 LOG=/tmp/devops.log
