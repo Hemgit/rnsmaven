@@ -2,13 +2,6 @@
 
 #! /bin/bash
 
-# Install Nginx
-amazon-linux-extras enable nginx1
-echo "Installing Nginx..." &>>$LOG
-yum install -y nginx &>>$LOG
-systemctl enable nginx
-systemctl start nginx
-echo "Nginx installed and started."
 
 # Global Variables
 LOG=/tmp/devops.log
@@ -16,6 +9,7 @@ LOG=/tmp/devops.log
 yum update -y
 # Set Hostname Jenkins
 hostnamectl set-hostname tomcat-server
+
 
 # add the user devops
 useradd devops
@@ -32,6 +26,14 @@ service sshd restart
 
 # Install Java
 amazon-linux-extras install java-openjdk11 -y &>>$LOG
+
+# Install Nginx
+amazon-linux-extras enable nginx1
+echo "Installing Nginx..." &>>$LOG
+yum install -y nginx &>>$LOG
+systemctl enable nginx
+systemctl start nginx
+echo "Nginx installed and started."
 
 # Install Git SCM
 yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
