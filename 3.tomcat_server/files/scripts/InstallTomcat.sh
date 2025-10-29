@@ -4,7 +4,7 @@
 
 # Install Nginx
 amazon-linux-extras enable nginx1
-echo "Installing Nginx..."
+echo "Installing Nginx..." &>>$LOG
 yum install -y nginx &>>$LOG
 systemctl enable nginx
 systemctl start nginx
