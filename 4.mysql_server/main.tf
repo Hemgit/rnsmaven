@@ -61,7 +61,7 @@ resource "aws_instance" "DB_Server" {
   instance_type               = var.instance_type
   vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
   associate_public_ip_address = true
-  key_name                    = "test1.pem"
+  key_name                    = "/home/cloudshell-user/test1.pem"
   user_data                   = file("./scripts/InstallMysql.sh")
 
   tags = {
