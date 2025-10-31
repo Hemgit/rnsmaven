@@ -45,37 +45,52 @@ git --version &>>$LOG
 chown -R devops:devops /opt
 # groupadd tomcat && useradd -M -s /bin/nologin -g tomcat -d /usr/local/tomcat tomcat
 
+
+# --- Tomcat installation logic from 3.tomcat_server InstallTomcat.sh ---
 cd /opt/
-wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.72/bin/apache-tomcat-9.0.72.tar.gz
-tar -xvf apache-tomcat-9.0.72.tar.gz &>>$LOG
-mv apache-tomcat-9.0.72 tomcat
-rm -f apache-tomcat-9.0.72.tar.gz
+# Download and install the latest Tomcat 10.x
+TOMCAT_VERSION=$(curl -s https://tomcat.apache.org/download-10.cgi | grep -oP 'apache-tomcat-\K[0-9.]+(?=\.zip)' | head -1)
+echo "Latest Tomcat version: $TOMCAT_VERSION"
+wget https://dlcdn.apache.org/tomcat/tomcat-10/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+tar -xvf apache-tomcat-${TOMCAT_VERSION}.tar.gz &>>$LOG
+mv apache-tomcat-${TOMCAT_VERSION} tomcat
+rm -f apache-tomcat-${TOMCAT_VERSION}.tar.gz
 
 chown -R devops:devops /opt/tomcat/
 
-echo '# Systemd unit file for tomcat
+# Dynamically detect JAVA_HOME
+JAVA_PATH=$(readlink -f /usr/bin/java)
+JAVA_HOME_DIR=$(dirname $(dirname $JAVA_PATH))
+cat <<EOF > /etc/systemd/system/tomcat.service
 [Unit]
 Description=Apache Tomcat Web Application Container
-After=syslog.target network.target
+After=network.target
+
 [Service]
 Type=forking
-Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.18.0.10-1.amzn2.0.1.x86_64
-Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
-Environment=CATALINA_HOME=/opt/tomcat/
-Environment=CATALINA_BASE=/opt/tomcat/
-Environment="CATALINA_OPTS=-Xms512M -Xmx512M -server -XX:+UseParallelGC"
-Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom"
-ExecStart=/opt/tomcat/bin/startup.sh
-ExecStop=/opt/tomcat/bin/shutdown.sh
-# ExecStop=/bin/kill -15 $MAINPID
 User=devops
 Group=devops
-[Install]
-WantedBy=multi-user.target' > /etc/systemd/system/tomcat.service
+Environment=JAVA_HOME=$JAVA_HOME_DIR
+Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
+Environment=CATALINA_HOME=/opt/tomcat
+Environment=CATALINA_BASE=/opt/tomcat
+Environment='CATALINA_OPTS=-Xms512M -Xmx512M -server -XX:+UseParallelGC'
+Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+Restart=on-failure
 
-systemctl daemon-reload
-systemctl start tomcat
-systemctl enable tomcat
+[Install]
+WantedBy=multi-user.target
+EOF
+
+if [ -f /etc/systemd/system/tomcat.service ]; then
+    systemctl daemon-reload
+    systemctl start tomcat
+    systemctl enable tomcat
+else
+    echo "/etc/systemd/system/tomcat.service not found. Skipping systemctl commands."
+fi
 
 # script to install maven
 
