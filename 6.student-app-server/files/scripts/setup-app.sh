@@ -22,7 +22,7 @@ mysql -uroot < /opt/student-app/dbscript/studentapp.sql
 sudo amazon-linux-extras install nginx1 -y
 sudo systemctl enable nginx
 sudo systemctl start nginx
-#sudo rm -rf /usr/share/nginx/html/*
+sudo rm -rf /usr/share/nginx/html/*
 cd /opt/ && git clone https://gitlab.com/rns-app/static-project.git
 sudo cp -R /opt/static-project/iPortfolio/* /usr/share/nginx/html
 sudo cp /opt/student-app/nginx/nginx.conf /etc/nginx/nginx.conf
