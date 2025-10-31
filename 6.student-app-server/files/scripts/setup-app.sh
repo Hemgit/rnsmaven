@@ -19,15 +19,13 @@ mysql -uroot < /opt/student-app/dbscript/studentapp.sql
 # mysql -ustudent -pstudent1
 
 # Nginx Setup
-
+sudo amazon-linux-extras install nginx1 -y
+sudo systemctl enable nginx
+sudo systemctl start nginx
 sudo rm -rf /usr/share/nginx/html/*
 cd /opt/ && git clone https://gitlab.com/rns-app/static-project.git
 sudo cp -R /opt/static-project/iPortfolio/* /usr/share/nginx/html
-
-# sudo sed -i -e '/location \/student/,+3 d' -e '/^        error_page 404/ i \\t location /student { \n\t\tproxy_pass http://localhost:8080/student;\n\t}\n' /etc/nginx/nginx.conf
-
 sudo cp /opt/student-app/nginx/nginx.conf /etc/nginx/nginx.conf
-
 sudo systemctl restart nginx
 
 # Tomcat Configuration
