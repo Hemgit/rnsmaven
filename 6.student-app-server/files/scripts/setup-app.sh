@@ -14,7 +14,7 @@ mvn --version
 
 # Load Application Schema
 cd /opt/ && git clone https://gitlab.com/rns-app/student-app.git
-sleep 15
+sleep 120
 mysql -uroot < /opt/student-app/dbscript/studentapp.sql
 # mysql -ustudent -pstudent1
 
