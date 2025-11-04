@@ -106,16 +106,13 @@
     group: devops
   become: yes
 
-- name: Get Tomcat service status
-  systemd:
-    name: tomcat
-    state: info
-  register: tomcat_status
-  become: yes
+- name: Gather service facts
+  service_facts:
+
 
 - name: Show Tomcat service status
   debug:
-    var: tomcat_status
+    var: ansible_facts.services['tomcat.service']
 
 # - name: Start Tomcat Service
 #   service:
