@@ -20,8 +20,7 @@
   unarchive:
     src: "{{TOMCAT_URL}}"
     dest: "/opt/"
-    remote_src: yes
-      #  when: tomcat_dir_check.stat.exists|bool == false
+    remote_src: yes #  when: tomcat_dir_check.stat.exists|bool == false
   notify: Restart Tomcat
 
 - name: Set the devops user owner and group
@@ -31,7 +30,6 @@
     owner: devops
     group: devops
     recurse: yes
-
 
 - name: Clone a github repository
   git:
@@ -89,4 +87,5 @@
   service:
     name: tomcat
     state: started
+    enabled: yes
   become: yes
