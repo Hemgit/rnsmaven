@@ -1,6 +1,13 @@
 - name: Install Java
   shell: "amazon-linux-extras install java-openjdk11 -y"
   notify: Restart Tomcat
+
+  become: yes
+
+- name: Remove Tomcat PID file if present
+  file:
+    path: "{{ TOMCAT_HOME }}/temp/tomcat.pid"
+    state: absent
   become: yes
 
 - name: Install Maven build tool
