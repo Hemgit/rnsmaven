@@ -80,7 +80,23 @@
     mode: u=rwx,g=rx,o=rx
 
 - name: Build it and Deploy the Application
+
   shell: "sed -i -e 's/\r$//' /home/devops/build.sh && /home/devops/build.sh"
+  become: yes
+
+- name: Set ownership for all Tomcat files and subdirectories
+  file:
+    path: "{{ TOMCAT_HOME }}"
+    owner: devops
+    group: devops
+    recurse: yes
+  become: yes
+
+- name: Set ownership for deployed student.war
+  file:
+    path: "{{ TOMCAT_HOME }}/webapps/student.war"
+    owner: devops
+    group: devops
   become: yes
 
 - name: Start Tomcat Service
