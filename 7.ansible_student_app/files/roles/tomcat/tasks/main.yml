@@ -106,9 +106,19 @@
     group: devops
   become: yes
 
-- name: Start Tomcat Service
-  service:
+- name: Get Tomcat service status
+  systemd:
     name: tomcat
-    state: started
-
+    state: info
+  register: tomcat_status
   become: yes
+
+- name: Show Tomcat service status
+  debug:
+    var: tomcat_status
+
+# - name: Start Tomcat Service
+#   service:
+#     name: tomcat
+#     state: started
+#   become: yes
