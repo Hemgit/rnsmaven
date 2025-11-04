@@ -24,9 +24,10 @@ STATUS_CHECK() {
 hostnamectl set-hostname ansible-controller
 
 # install ansible
-yum-config-manager --enable epel
-yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install epel-release-latest-7.noarch.rpm
+#yum-config-manager --enable epel
+#yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+#yum install epel-release-latest-7.noarch.rpm
+amazon-linux-extras install epel -y
 yum update -y
 yum install python python-devel python-pip openssl ansible git -y
 
