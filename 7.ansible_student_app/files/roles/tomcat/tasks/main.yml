@@ -114,8 +114,9 @@
   debug:
     var: ansible_facts.services['tomcat.service']
 
-# - name: Start Tomcat Service
-#   service:
-#     name: tomcat
-#     state: started
-#   become: yes
+- name: Start Tomcat Service
+  service:
+    name: tomcat
+    state: started
+  become: yes
+  remote_user: devops
