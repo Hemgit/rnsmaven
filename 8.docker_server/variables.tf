@@ -5,7 +5,7 @@ variable "region" {
 
 variable "ports" {
   type    = list(number)
-  default = [22, 80, 8080]
+  default = [22, 80, 8080, 8000]
 }
 
 variable "instance_type" {
