@@ -76,7 +76,7 @@ systemctl enable jenkins
 chkconfig jenkins on
 
 # Install Nginx
-amazon-linux-extras install nginx1 -y
+yum install nginx -y
 
 # Configure Nginx as reverse proxy for Jenkins
 cat > /etc/nginx/conf.d/jenkins.conf <<'EOF'
