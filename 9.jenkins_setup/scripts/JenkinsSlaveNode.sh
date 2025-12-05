@@ -25,7 +25,7 @@ hostnamectl set-hostname Jenkins-Slave
 
 yum update -y
 # Install Java 17
-amazon-linux-extras install java-openjdk17 -y
+sudo yum install java-17-amazon-corretto -y
 
 # add the user ansible
 useradd devops
