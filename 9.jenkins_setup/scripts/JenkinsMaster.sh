@@ -74,3 +74,34 @@ systemctl enable jenkins
 
 # Make sure Jenkins comes up/on when reboot
 chkconfig jenkins on
+
+# Install Nginx
+amazon-linux-extras install nginx1 -y
+
+# Configure Nginx as reverse proxy for Jenkins
+cat > /etc/nginx/conf.d/jenkins.conf <<'EOF'
+upstream jenkins {
+  keepalive 32;
+  server 127.0.0.1:8080;
+}
+
+server {
+  listen 80;
+  server_name _;
+
+  location / {
+    proxy_pass http://jenkins;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_http_version 1.1;
+    proxy_request_buffering off;
+    proxy_buffering off;
+  }
+}
+EOF
+
+# Start and enable Nginx
+systemctl start nginx
+systemctl enable nginx
