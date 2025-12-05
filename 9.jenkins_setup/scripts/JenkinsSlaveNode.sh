@@ -24,8 +24,8 @@ STATUS_CHECK() {
 hostnamectl set-hostname Jenkins-Slave
 
 yum update -y
-# Install Java 11
-amazon-linux-extras install java-openjdk11 -y
+# Install Java 17
+amazon-linux-extras install java-openjdk17 -y
 
 # add the user ansible
 useradd devops

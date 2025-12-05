@@ -1,5 +1,5 @@
 - name: Install Java
-  shell: "amazon-linux-extras install java-openjdk11 -y"
+  shell: "amazon-linux-extras install java-openjdk17 -y"
   notify: Restart Tomcat
 
   become: yes
