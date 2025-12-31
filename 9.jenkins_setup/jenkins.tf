@@ -50,14 +50,14 @@ resource "aws_instance" "Jenkins_Master" {
   }
 }
 
-resource "aws_instance" "Jenkins_Slave" {
-  ami                         = data.aws_ami.aws-linux-2-latest.id
-  instance_type               = var.instance_type
-  vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
-  associate_public_ip_address = true
-  user_data                   = file("./scripts/JenkinsSlaveNode.sh")
+# resource "aws_instance" "Jenkins_Slave" {
+#   ami                         = data.aws_ami.aws-linux-2-latest.id
+#   instance_type               = var.instance_type
+#   vpc_security_group_ids      = [aws_security_group.MyLab_Sec_Group.id]
+#   associate_public_ip_address = true
+#   user_data                   = file("./scripts/JenkinsSlaveNode.sh")
 
-  tags = {
-    Name = "Jenkins-Slave"
-  }
-}
+#   tags = {
+#     Name = "Jenkins-Slave"
+#   }
+# }
