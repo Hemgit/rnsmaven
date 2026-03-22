@@ -68,6 +68,7 @@ resource "null_resource" "wait_for_instance" {
   }
 }
 
+/*
 resource "aws_instance" "Ansible_Web_Server" {
   ami                         = data.aws_ami.aws-linux-2-latest.id
   instance_type               = var.instance_type
@@ -91,3 +92,5 @@ resource "aws_instance" "Ansible_App_Server" {
     Name = "Ansible-AppServer"
   }
 }
+
+*/

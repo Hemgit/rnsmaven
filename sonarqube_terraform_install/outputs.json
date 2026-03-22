@@ -1,0 +1,12 @@
+{
+  "private_ip": {
+    "sensitive": false,
+    "type": "string",
+    "value": "172.31.46.172"
+  },
+  "public_ip": {
+    "sensitive": false,
+    "type": "string",
+    "value": "176.34.157.104"
+  }
+}

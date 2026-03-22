@@ -12,10 +12,10 @@ java -version
 sudo bash /opt/tomcat/bin/version.sh
 
 # Tomcat Configuration
-cp /tmp/tomcat/manager/context.xml /opt/tomcat/webapps/manager/META-INF/
-cp /tmp/tomcat/conf/tomcat-users.xml /opt/tomcat/conf/
-cp /tmp/tomcat/conf/context.xml /opt/tomcat/conf/
-cp /tmp/tomcat/lib/mysql-connector.jar /opt/tomcat/lib/
+cp /tmp/scripts/manager/context.xml /opt/tomcat/webapps/manager/META-INF/
+cp /tmp/scripts/conf/tomcat-users.xml /opt/tomcat/conf/
+cp /tmp/scripts/conf/context.xml /opt/tomcat/conf/
+cp /tmp/scripts/lib/mysql-connector.jar /opt/tomcat/lib/
 
 # Restart the Tomcat SErver
 sudo systemctl stop tomcat

@@ -26,7 +26,7 @@ STATUS_CHECK() {
 yum update -y
 
 # Install Java
-amazon-linux-extras install java-openjdk11 -y
+yum install java-17-amazon-corretto -y
 
 # Download and Install Jenkins
 

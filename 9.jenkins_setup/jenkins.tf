@@ -61,3 +61,4 @@ resource "aws_instance" "Jenkins_Slave" {
     Name = "Jenkins-Slave"
   }
 }
+

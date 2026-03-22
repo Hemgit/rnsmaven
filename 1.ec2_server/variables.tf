@@ -1,6 +1,6 @@
 variable "region" {
   type    = string
-  default = "eu-north-1"
+  default = "eu-west-1"
 }
 
 variable "ports" {
@@ -10,7 +10,7 @@ variable "ports" {
 
 variable "instance_type" {
   type    = string
-  default = "t3.micro"
+  default = "t2.micro"
 }
 
 output "public_ip" {

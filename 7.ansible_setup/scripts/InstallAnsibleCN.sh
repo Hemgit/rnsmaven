@@ -24,11 +24,22 @@ STATUS_CHECK() {
 hostnamectl set-hostname ansible-controller
 
 # install ansible
+/*
 yum-config-manager --enable epel
 yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install epel-release-latest-7.noarch.rpm
 yum update -y
 yum install python python-devel python-pip openssl ansible -y
+*/
+
+amazon-linux-extras install epel -y &>>$LOG
+
+yum clean metadata &>>$LOG
+yum update -y &>>$LOG
+
+yum install ansible -y &>>$LOG
+ansible --version &>>$LOG
+STATUS_CHECK $? "Successfully Installed Ansible\t"
 
 sudo su -
 # add the user ansible

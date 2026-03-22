@@ -1,96 +1,127 @@
-#! /bin/bash
+#!/bin/bash
+set -euo pipefail
 
-# Global Variables
 LOG=/tmp/devops.log
 
-yum update -y
-# Set Hostname Jenkins
+# Update system
+yum update -y &>>"$LOG"
+
+# Set Hostname
 hostnamectl set-hostname app-server
 
-# add the user devops
-useradd devops
-# set password : the below command will avoid re entering the password
-echo "devops" | passwd --stdin devops
-echo "devops" | passwd --stdin ec2-user
-# modify the sudoers file at /etc/sudoers and add entry
-echo 'devops     ALL=(ALL)      NOPASSWD: ALL' | sudo tee -a /etc/sudoers
-echo 'ec2-user     ALL=(ALL)      NOPASSWD: ALL' | sudo tee -a /etc/sudoers
-# this command is to add an entry to file : echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
-# the below sed command will find and replace words with spaces "PasswordAuthentication no" to "PasswordAuthentication yes"
+# Add devops user
+if ! id devops &>/dev/null; then
+    useradd devops
+    echo "devops" | passwd --stdin devops
+fi
+
+# Add devops and ec2-user to sudoers
+grep -q '^devops' /etc/sudoers || echo 'devops ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+grep -q '^ec2-user' /etc/sudoers || echo 'ec2-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+# Enable SSH password auth
 sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-service sshd restart
+systemctl restart sshd
 
-# Install Java
-amazon-linux-extras install java-openjdk11 -y &>>$LOG
+# Install Java 11
+amazon-linux-extras install java-openjdk11 -y &>>"$LOG"
 
-# Install Git SCM
-yum install tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq -y &>>$LOG
-git --version &>>$LOG
+# Install Git and utilities
+yum install -y tree wget zip unzip gzip vim net-tools git bind-utils python2-pip jq &>>"$LOG"
 
-sudo su - devops -c "git config --global user.name 'devops'"
-sudo su - devops -c "git config --global user.email 'devops@gmail.com'"
+# Configure Git
+sudo -u devops git config --global user.name "devops"
+sudo -u devops git config --global user.email "devops@gmail.com"
 
-## Enable color prompt
+# Color prompt
 curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/ps1.sh -o /etc/profile.d/ps1.sh
 chmod +x /etc/profile.d/ps1.sh
 
-## Enable idle shutdown
+# Idle shutdown cron
 curl -s https://gitlab.com/rns-app/linux-auto-scripts/-/raw/main/idle.sh -o /boot/idle.sh
-chmod +x /boot/idle.sh && chown devops:devops /boot/idle.sh
-{ crontab -l -u devops; echo '*/10 * * * * sh -x /boot/idle.sh &>/tmp/idle.out'; } | crontab -u devops -
+chmod +x /boot/idle.sh
+chown devops:devops /boot/idle.sh
+(crontab -l -u devops 2>/dev/null; echo '*/10 * * * * sh -x /boot/idle.sh &>/tmp/idle.out') | crontab -u devops -
 
-java -version &>>$LOG
-git --version &>>$LOG
+# Verify installations
+java -version &>>"$LOG"
+git --version &>>"$LOG"
 
+# Prepare /opt
 chown -R devops:devops /opt
-# groupadd tomcat && useradd -M -s /bin/nologin -g tomcat -d /usr/local/tomcat tomcat
 
-cd /opt/
-wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.75.tar.gz
-tar -xvf apache-tomcat-9.0.75.tar.gz &>>$LOG
-mv apache-tomcat-9.0.75 tomcat
-rm -f apache-tomcat-9.0.75.tar.gz
+# ----------------------------
+# Install Latest Tomcat 9
+# ----------------------------
+cd /opt || exit
 
-chown -R devops:devops /opt/tomcat/
+# Detect latest Tomcat 9 version
+LATEST=$(curl -s https://dlcdn.apache.org/tomcat/tomcat-9/ \
+        | grep -oP 'v9\.\d+\.\d+/' | sort -V | tail -1 | tr -d 'v/')
+TOMCAT_URL="https://dlcdn.apache.org/tomcat/tomcat-9/v${LATEST}/bin/apache-tomcat-${LATEST}.tar.gz"
 
-echo '# Systemd unit file for tomcat
+echo "Downloading Tomcat from $TOMCAT_URL" &>>"$LOG"
+wget --tries=5 --retry-connrefused -O apache-tomcat-latest.tar.gz "$TOMCAT_URL"
+
+if [ ! -s apache-tomcat-latest.tar.gz ]; then
+    echo "ERROR: Tomcat download failed!" >&2
+    exit 1
+fi
+
+# Extract
+mkdir -p /opt/tomcat
+tar -xzf apache-tomcat-latest.tar.gz -C /opt/tomcat --strip-components=1
+rm -f apache-tomcat-latest.tar.gz
+chown -R devops:devops /opt/tomcat
+
+# Create required directories
+mkdir -p /opt/tomcat/temp /opt/tomcat/logs /opt/tomcat/work
+chown -R devops:devops /opt/tomcat
+
+# Get JAVA_HOME dynamically
+JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+
+# Systemd service
+cat >/etc/systemd/system/tomcat.service <<EOF
 [Unit]
 Description=Apache Tomcat Web Application Container
 After=syslog.target network.target
+
 [Service]
 Type=forking
-Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.18.0.10-1.amzn2.0.1.x86_64
+Environment=JAVA_HOME=${JAVA_HOME}
 Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
-Environment=CATALINA_HOME=/opt/tomcat/
-Environment=CATALINA_BASE=/opt/tomcat/
-Environment="CATALINA_OPTS=-Xms512M -Xmx512M -server -XX:+UseParallelGC"
-Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom"
+Environment=CATALINA_HOME=/opt/tomcat
+Environment=CATALINA_BASE=/opt/tomcat
 ExecStart=/opt/tomcat/bin/startup.sh
 ExecStop=/opt/tomcat/bin/shutdown.sh
-# ExecStop=/bin/kill -15 $MAINPID
 User=devops
 Group=devops
+Restart=on-failure
+
 [Install]
-WantedBy=multi-user.target' > /etc/systemd/system/tomcat.service
+WantedBy=multi-user.target
+EOF
 
 systemctl daemon-reload
-systemctl start tomcat
 systemctl enable tomcat
+systemctl start tomcat
+systemctl status tomcat --no-pager &>>"$LOG"
 
-# Install the Nginx Server
+# ----------------------------
+# Install Nginx
+# ----------------------------
+amazon-linux-extras install nginx1 -y &>>"$LOG"
+systemctl enable nginx &>>"$LOG"
+systemctl restart nginx &>>"$LOG"
+systemctl status nginx --no-pager &>>"$LOG"
 
-echo "Web Server Setup"
-
-amazon-linux-extras install nginx1 -y &>>$LOG
-
-# rm -rf /usr/share/nginx/html/* &>>$LOG
-
-systemctl enable nginx &>>$LOG
-systemctl restart nginx &>>$LOG
-
-# Install Maria Db Database
-
-yum install mariadb-server mysql -y
-
+# ----------------------------
+# Install MariaDB
+# ----------------------------
+yum install -y mariadb-server &>>"$LOG"
 systemctl enable mariadb
 systemctl start mariadb
+systemctl status mariadb --no-pager &>>"$LOG"
+
+echo "All tools installed successfully!"

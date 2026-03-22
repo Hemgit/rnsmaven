@@ -1,66 +1,77 @@
-#! /bin/bash
+#!/bin/bash
+set -e
 
-# Global Variables
-LOG=/tmp/devops.log
-G="\e[32m"
-R="\e[31m"
-N="\e[0m"
+# Variables
+NEXUS_USER=devops
+NEXUS_HOME=/opt/nexus3
+TMP_DIR=/tmp
+LOG=/home/$NEXUS_USER/install_nexus.log
 
-# Heading Function
-HEADING() {
-  echo -e "\n\t\t\e[1;4;33m$1\e[0m\n"
-}
+# Ensure log file is writable
+mkdir -p /home/$NEXUS_USER
+touch $LOG
+chown $NEXUS_USER:$NEXUS_USER $LOG
 
-# Status check function
-STATUS_CHECK() {
-  if [ $1 -eq 0 ]; then
-    echo -e "$2 -- ${G}SUCCESS${N}"
-  else
-    echo -e "$2 -- ${R}FAILURE${N}"
+echo "Starting Nexus installation" | tee -a $LOG
+
+# Detect latest Nexus 3 version
+echo "Detecting latest Nexus version..." | tee -a $LOG
+LATEST_VERSION=$(curl -s https://download.sonatype.com/nexus/3/latest | grep -Eo 'nexus-3\.[0-9]+\.[0-9]+-[0-9]+-unix\.tar\.gz' | head -1)
+if [ -z "$LATEST_VERSION" ]; then
+    echo "Failed to detect latest Nexus version" | tee -a $LOG
     exit 1
-  fi
-}
+fi
+DOWNLOAD_URL="https://download.sonatype.com/nexus/3/$LATEST_VERSION"
+echo "Latest Nexus version detected: $LATEST_VERSION" | tee -a $LOG
 
-sleep 60
+# Download Nexus tarball
+echo "Downloading Nexus $LATEST_VERSION..." | tee -a $LOG
+sudo wget -q --show-progress $DOWNLOAD_URL -O $TMP_DIR/nexus.tar.gz
+if [ $? -ne 0 ]; then
+  echo "Download Nexus -- FAILURE" | tee -a $LOG
+  exit 1
+fi
+echo "Download Nexus -- SUCCESS" | tee -a $LOG
 
-# Download Nexus
-cd /opt/
-sudo wget https://download.sonatype.com/nexus/3/latest-unix.tar.gz
-sudo chown -R devops:devops /opt
-# Unzip/Untar the compressed file
-tar xf latest-unix.tar.gz
-# Rename folder for ease of use
-mv nexus-3.* nexus3
-# Enable permission for ec2-user to work on nexus3 and sonatype-work folders
-chown -R devops:devops nexus3/ sonatype-work/
-# Create a file called nexus.rc and add run as ec2-user
-cd /opt/nexus3/bin/
-#touch nexus.rc
-#echo 'run_as_user="devops"' | sudo tee -a /opt/nexus3/bin/nexus.rc
-sed -i 's/^#.*/run_as_user="devops"/g' /opt/nexus3/bin/nexus.rc
-# Add nexus as a service at boot time
-#ln -s /opt/nexus3/bin/nexus /etc/init.d/nexus
-#chown -h devops:devops /etc/rc.d/init.d/nexus
+# Extract Nexus
+echo "Extracting Nexus..." | tee -a $LOG
+sudo tar -xzf $TMP_DIR/nexus.tar.gz -C $TMP_DIR
+EXTRACTED_DIR=$(tar -tf $TMP_DIR/nexus.tar.gz | head -1 | cut -f1 -d"/")
 
-sudo echo '[Unit]
-Description=nexus service
+# Move Nexus to /opt
+echo "Moving Nexus to $NEXUS_HOME..." | tee -a $LOG
+sudo mv $TMP_DIR/$EXTRACTED_DIR $NEXUS_HOME
+
+# Ownership
+sudo chown -R $NEXUS_USER:$NEXUS_USER $NEXUS_HOME
+sudo mkdir -p $NEXUS_HOME/sonatype-work
+sudo chown -R $NEXUS_USER:$NEXUS_USER $NEXUS_HOME/sonatype-work
+
+# Configure nexus.rc
+echo 'run_as_user="'$NEXUS_USER'"' | sudo tee $NEXUS_HOME/bin/nexus.rc
+
+# Setup systemd service
+sudo bash -c "cat <<EOF > /etc/systemd/system/nexus.service
+[Unit]
+Description=Nexus Repository Manager
 After=network.target
 
 [Service]
 Type=forking
 LimitNOFILE=65536
-ExecStart=/opt/nexus3/bin/nexus start
-ExecStop=/opt/nexus3/bin/nexus stop
-User=devops
-Group=devops
+ExecStart=$NEXUS_HOME/bin/nexus start
+ExecStop=$NEXUS_HOME/bin/nexus stop
+User=$NEXUS_USER
+Group=$NEXUS_USER
 Restart=on-abort
 TimeoutSec=600
 
 [Install]
-WantedBy=multi-user.target' | sudo tee -a /etc/systemd/system/nexus.service
-sudo chown devops:devops /etc/systemd/system/nexus.service
-sudo chmod +x /etc/systemd/system/nexus.service
-# Start Nexus
+WantedBy=multi-user.target
+EOF"
+
 sudo systemctl daemon-reload
-sudo systemctl start nexus
 sudo systemctl enable nexus
+sudo systemctl start nexus
+
+echo "Nexus installation completed successfully!" | tee -a $LOG

@@ -73,13 +73,11 @@ resource "aws_instance" "Deployment_Server" {
 }
 
 resource "null_resource" "wait_for_instance" {
-  depends_on = [
-    aws_instance.Deployment_Server
-  ]
+  depends_on = [aws_instance.Deployment_Server]
 
   provisioner "file" {
     source      = "files/"
-    destination = "/tmp/"
+    destination = "/tmp/scripts/"
 
     connection {
       type        = "ssh"
@@ -98,12 +96,17 @@ resource "null_resource" "wait_for_instance" {
     }
 
     inline = [
-      "chmod +x /tmp/scripts/setup-app.sh",
-      "sed -i -e 's/\r$//' /tmp/scripts/setup-app.sh",
-      "/tmp/scripts/setup-app.sh"
+      # Fix CRLF in scripts and add execute permission
+      "sed -i 's/\\r$//' /tmp/scripts/*.sh",
+      "chmod +x /tmp/scripts/*.sh",
+
+      # Run InstallTools.sh with sudo (needed for packages, /opt, systemd)
+      "sudo /tmp/scripts/InstallTools.sh",
+
+      # Run setup-app.sh as devops user
+      "sudo -u devops /tmp/scripts/setup-app.sh"
     ]
   }
 }
-
 # "cd /opt/ && git clone git@gitlab.com:venkat09docs/rns-devops/student-app.git",
 # git clone git@gitlab.com:venkat09docs/rns-devops/student-app.git --config core.sshCommand="ssh -i /home/ec2-user/.ssh/id_rsa"

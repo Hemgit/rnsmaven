@@ -17,6 +17,7 @@ output "JenkinsMaster_Public_IP" {
   value = aws_instance.Jenkins_Master.public_ip
 }
 
+
 output "Jenkins_Slave_Public_IP" {
   value = aws_instance.Jenkins_Slave.public_ip
 }
